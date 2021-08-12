@@ -5,17 +5,17 @@ import * as Helpers from "./helpers";
 
 const libPath = "js/lib";
 
-export class TestView {
+export class CtRebuilderView {
   constructor(context: vscode.ExtensionContext, private workspaceRoot: string) {
     const view = vscode.window.createTreeView("testView", {
-      treeDataProvider: aNodeWithIdTreeDataProvider(workspaceRoot),
+      treeDataProvider: aNodeWithIdTreeDataProvider(this.workspaceRoot),
       showCollapseAll: true,
     });
 
     context.subscriptions.push(view);
 
     vscode.commands.registerCommand("testView.buildLib", async (libName) => {
-      const folderPath = join(workspaceRoot, libPath, libName);
+      const folderPath = join(this.workspaceRoot, libPath, libName);
       try {
         // delete existing dist folder
         let commandLine = "rm -rf dist";
@@ -42,26 +42,6 @@ export class TestView {
   }
 }
 
-const tree = {
-  a: {
-    aa: {
-      aaa: {
-        aaaa: {
-          aaaaa: {
-            aaaaaa: {},
-          },
-        },
-      },
-    },
-    ab: {},
-  },
-  b: {
-    ba: {},
-    bb: {},
-  },
-};
-const nodes: any = {};
-
 function aNodeWithIdTreeDataProvider(
   workspaceRoot: string
 ): vscode.TreeDataProvider<{
@@ -74,47 +54,30 @@ function aNodeWithIdTreeDataProvider(
       return folders.map((folder) => new Key(folder));
     },
     getTreeItem: (element: { key: string }): vscode.TreeItem => {
-      const treeItem = getTreeItem(element.key, workspaceRoot);
+      const treeItem = getTreeItem(element.key);
       treeItem.id = element.key;
       return treeItem;
     },
   };
 }
 
-function getTreeItem(key: string, workspaceRoot: string): vscode.TreeItem {
-  const treeElement = getTreeElement(key);
+function getTreeItem(key: string): vscode.TreeItem {
   // An example of how to use codicons in a MarkdownString in a tree item tooltip.
   const tooltip = new vscode.MarkdownString(`$(zap) Tooltip for ${key}`, true);
 
-  const tempIconPath = {
-    light: join(__filename, "..", "..", "resources", "light", "dependency.svg"),
-    dark: join(__filename, "..", "..", "resources", "dark", "dependency.svg"),
-  };
   return {
-    label: /**vscode.TreeItemLabel**/ <any>{
+    label: {
       label: key,
       highlights: key.length > 1 ? [[key.length - 2, key.length - 1]] : void 0,
     },
     tooltip,
     contextValue: "folder",
-    iconPath: tempIconPath,
     command: {
       command: "testView.buildLib",
       title: "Rebuild",
       arguments: [key],
     },
   };
-}
-
-function getTreeElement(element: any): any {
-  let parent: any = tree;
-  for (let i = 0; i < element.length; i++) {
-    parent = parent[element.substring(0, i + 1)];
-    if (!parent) {
-      return null;
-    }
-  }
-  return parent;
 }
 
 class Key {

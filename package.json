@@ -22,14 +22,6 @@
         "title": "Hello World"
       },
       {
-        "command": "testView.reveal",
-        "title": "Test View: Reveal"
-      },
-      {
-        "command": "testView.changeTitle",
-        "title": "Test View: Change Title"
-      },
-      {
         "command": "testView.buildLib",
         "title": "Rebuild Lib",
         "icon": {
@@ -51,7 +43,7 @@
       "explorer": [
         {
           "id": "testView",
-          "name": "Test View"
+          "name": "CT-REBUILDER"
         }
       ]
     }
