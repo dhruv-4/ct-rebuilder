@@ -1,19 +1,12 @@
 import * as vscode from "vscode";
-
-import { readdirSync } from "fs";
 import { join } from "path";
+
+import * as Helpers from "./helpers";
 
 const libPath = "js/lib";
 
-let iconPath = "";
-
 export class TestView {
   constructor(context: vscode.ExtensionContext, private workspaceRoot: string) {
-    const folders = getDirectories(join(workspaceRoot, libPath));
-    console.log(folders);
-
-    iconPath = context.asAbsolutePath(join("resources", "dark", "refresh.svg"));
-
     const view = vscode.window.createTreeView("testView", {
       treeDataProvider: aNodeWithIdTreeDataProvider(workspaceRoot),
       showCollapseAll: true,
@@ -21,35 +14,30 @@ export class TestView {
 
     context.subscriptions.push(view);
 
-    // vscode.commands.registerCommand("testView.reveal", async () => {
-    //   const key = await vscode.window.showInputBox({
-    //     placeHolder: "Type the label of the item to reveal",
-    //   });
-    //   if (key) {
-    //     await view.reveal(
-    //       { key },
-    //       { focus: true, select: false, expand: true }
-    //     );
-    //   }
-    // });
-    // vscode.commands.registerCommand("testView.changeTitle", async () => {
-    //   const title = await vscode.window.showInputBox({
-    //     prompt: "Type the new title for the Test View",
-    //     placeHolder: view.title,
-    //   });
-    //   if (title) {
-    //     view.title = title;
-    //   }
-    // });
-    vscode.commands.registerCommand("testView.buildLib", async (temp) => {
-      console.log("here", temp);
-      //   const title = await vscode.window.showInputBox({
-      //     prompt: "Type the new title for the Test View",
-      //     placeHolder: view.title,
-      //   });
-      //   if (title) {
-      //     view.title = title;
-      //   }
+    vscode.commands.registerCommand("testView.buildLib", async (libName) => {
+      const folderPath = join(workspaceRoot, libPath, libName);
+      try {
+        // delete existing dist folder
+        let commandLine = "rm -rf dist";
+        await Helpers.exec(commandLine, {
+          cwd: folderPath,
+        });
+
+        // run build command
+        commandLine = "yarn build";
+        await Helpers.exec(commandLine, {
+          cwd: folderPath,
+        });
+
+        vscode.window.showInformationMessage(
+          `Successfully rebuilt ${join(libPath, libName)}`
+        );
+      } catch (ex) {
+        console.log({ ex });
+        vscode.window.showErrorMessage(
+          `Failed to run command for ${join(libPath, libName)}`
+        );
+      }
     });
   }
 }
@@ -81,14 +69,9 @@ function aNodeWithIdTreeDataProvider(
 }> {
   return {
     getChildren: (element: { key: string }): { key: string }[] => {
-      const folders = getDirectories(join(workspaceRoot, libPath));
+      const folders = Helpers.getDirectories(join(workspaceRoot, libPath));
 
       return folders.map((folder) => new Key(folder));
-
-      // return folders
-      //   return getChildren(element ? element.key : undefined).map((key) =>
-      //     getNode(key)
-      //   );
     },
     getTreeItem: (element: { key: string }): vscode.TreeItem => {
       const treeItem = getTreeItem(element.key, workspaceRoot);
@@ -96,17 +79,6 @@ function aNodeWithIdTreeDataProvider(
       return treeItem;
     },
   };
-}
-
-function getChildren(key?: string): string[] {
-  if (!key) {
-    return Object.keys(tree);
-  }
-  const treeElement = getTreeElement(key);
-  if (treeElement) {
-    return Object.keys(treeElement);
-  }
-  return [];
 }
 
 function getTreeItem(key: string, workspaceRoot: string): vscode.TreeItem {
@@ -120,7 +92,7 @@ function getTreeItem(key: string, workspaceRoot: string): vscode.TreeItem {
   };
   return {
     label: /**vscode.TreeItemLabel**/ <any>{
-      label: `${key}`,
+      label: key,
       highlights: key.length > 1 ? [[key.length - 2, key.length - 1]] : void 0,
     },
     tooltip,
@@ -129,7 +101,7 @@ function getTreeItem(key: string, workspaceRoot: string): vscode.TreeItem {
     command: {
       command: "testView.buildLib",
       title: "Rebuild",
-      arguments: [join(workspaceRoot, libPath, key)],
+      arguments: [key],
     },
   };
 }
@@ -145,19 +117,6 @@ function getTreeElement(element: any): any {
   return parent;
 }
 
-function getNode(key: string): { key: string } {
-  if (!nodes[key]) {
-    nodes[key] = new Key(key);
-  }
-  return nodes[key];
-}
-
 class Key {
   constructor(readonly key: string) {}
-}
-
-function getDirectories(source: any) {
-  return readdirSync(source, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
 }
