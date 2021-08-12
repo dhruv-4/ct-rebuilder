@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:ct-rebuilder.helloWorld",
-    "onView:fileExplorer"
+    "onView:testView",
+    "onCommand:testView.reveal"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -21,23 +22,27 @@
         "title": "Hello World"
       },
       {
-        "command": "fileExplorer.refreshFile",
-        "title": "Refresh",
+        "command": "testView.reveal",
+        "title": "Test View: Reveal"
+      },
+      {
+        "command": "testView.changeTitle",
+        "title": "Test View: Change Title"
+      },
+      {
+        "command": "testView.buildLib",
+        "title": "Rebuild Lib",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
         }
-      },
-      {
-        "command": "fileExplorer.openFile",
-        "title": "Open File"
       }
     ],
     "menus": {
       "view/item/context": [
         {
-          "command": "fileExplorer.refreshFile",
-          "when": "view == fileExplorer && viewItem == file",
+          "command": "testView.buildLib",
+          "when": "view == folder",
           "group": "inline"
         }
       ]
@@ -45,8 +50,8 @@
     "views": {
       "explorer": [
         {
-          "id": "fileExplorer",
-          "name": "CT-BUILDER"
+          "id": "testView",
+          "name": "Test View"
         }
       ]
     }
@@ -72,5 +77,6 @@
     "supports-color": "^9.0.1",
     "typescript": "^4.3.2",
     "vscode-test": "^1.5.2"
-  }
+  },
+  "dependencies": {}
 }
