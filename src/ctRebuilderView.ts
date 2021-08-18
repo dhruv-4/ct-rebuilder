@@ -62,8 +62,10 @@ function aNodeWithIdTreeDataProvider(
 }
 
 function getTreeItem(key: string): vscode.TreeItem {
-  // An example of how to use codicons in a MarkdownString in a tree item tooltip.
-  const tooltip = new vscode.MarkdownString(`$(zap) Tooltip for ${key}`, true);
+  const tooltip = new vscode.MarkdownString(
+    `$(zap) Click to rebuild ${key}`,
+    true
+  );
 
   return {
     label: {
