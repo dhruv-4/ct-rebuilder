@@ -12,8 +12,7 @@
   ],
   "activationEvents": [
     "onCommand:ct-rebuilder.helloWorld",
-    "onView:testView",
-    "onCommand:testView.reveal"
+    "onView:testView"
   ],
   "main": "./out/extension.js",
   "contributes": {

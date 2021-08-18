@@ -70,7 +70,6 @@ function getTreeItem(key: string): vscode.TreeItem {
   return {
     label: {
       label: key,
-      highlights: key.length > 1 ? [[key.length - 2, key.length - 1]] : void 0,
     },
     tooltip,
     contextValue: "folder",
