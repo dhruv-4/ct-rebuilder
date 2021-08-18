@@ -1,8 +1,8 @@
 # ct-rebuilder
 
-VsCode Extension to rebuild js/lib for ct-backend repo
+VsCode Extension to rebuild `js/lib` for `ct-backend` repo
 
-![ct-rebuilder](https://user-images.githubusercontent.com/75316673/129876357-96bfa49d-78fc-4b6f-aacc-1fb8e7ffa746.gif)
+![ct-rebuilder](https://user-images.githubusercontent.com/75316673/129899777-158ec7f7-080d-4165-b7d4-da6d9f162e08.gif)
 
 ## Installation
 
