@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import { readdirSync } from "fs";
 
 import * as cp from "child_process";
@@ -20,4 +21,20 @@ export function exec(
       resolve({ stdout, stderr });
     });
   });
+}
+
+const TYPESCRIPT_EXTENSION_ID = "vscode.typescript-language-features";
+
+export async function softRestartTsServer() {
+  const typeScriptExtension = vscode.extensions.getExtension(
+    TYPESCRIPT_EXTENSION_ID
+  );
+  if (!typeScriptExtension || typeScriptExtension.isActive === false) {
+    vscode.window.showErrorMessage(
+      "TypeScript extension is not active or not running."
+    );
+    return;
+  }
+
+  await vscode.commands.executeCommand("typescript.restartTsServer");
 }

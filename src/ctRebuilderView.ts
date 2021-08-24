@@ -29,6 +29,8 @@ export class CtRebuilderView {
           cwd: folderPath,
         });
 
+        await Helpers.softRestartTsServer();
+
         vscode.window.showInformationMessage(
           `Successfully rebuilt ${join(libPath, libName)}`
         );
